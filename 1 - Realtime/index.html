@@ -23,21 +23,23 @@
     </main>
 
     <!-- Firebase App is always required and must be first -->
-    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
     <!-- Add additional services that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-database.js"></script>
     <!-- Inicializa o firebase -->
     <script>
+        // Your web app's Firebase configuration
         var firebaseConfig = {
-            apiKey: "AIzaSyAuUtqt5xOdnY4HAawqy0h13JYJAjiSbyg",
-            authDomain: "demonstracao-app-firebas-muril.firebaseapp.com",
-            databaseURL: "https://demonstracao-app-firebas-muril.firebaseio.com",
-            projectId: "demonstracao-app-firebas-muril",
-            storageBucket: "",
-            messagingSenderId: "726818434601",
-            appId: "1:726818434601:web:ffcbc388433530695bf638"
+            apiKey: "AIzaSyA_ntG9eYNWtC9DtFgVTYHNRqslUjt3tQY",
+            authDomain: "curso-firebase-webapps-6074c.firebaseapp.com",
+            databaseURL: "https://curso-firebase-webapps-6074c.firebaseio.com",
+            projectId: "curso-firebase-webapps-6074c",
+            storageBucket: "curso-firebase-webapps-6074c.appspot.com",
+            messagingSenderId: "820615749472",
+            appId: "1:820615749472:web:5c826309a535816a61c805"
         };
-        firebase.initializeApp(config);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
     </script>
     <!-- Nosso app -->
     <script src="./app.js"></script>

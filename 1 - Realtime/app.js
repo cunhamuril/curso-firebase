@@ -3,12 +3,42 @@
  */
 var CARD_CONTAINER = document.getElementsByClassName('card-container')[0];
 var NOMES = ["Anderson", "Beatriz", "Caio", "Daniela", "Everton", "Fabiana", "Gabriel", "Hortencia", "Igor", "Joana"];
+var cards = [];
+
+/**
+ * firebase: objeto global
+ * database(): metedo para acesso ao realtime database
+ * ref(): url em string para referencia do caminho do banco 
+ */
+var ref = firebase.database().ref('card')
 
 /**
  * Botão para cria um card no card-contaier
  */
 function criarCard() {
-    
+    var card = {
+        nome: NOMES[Math.floor(Math.random() * (NOMES.length - 1))],
+        idade: Math.floor(Math.random() * 22 + 18),
+        curtidas: 0
+    }
+
+    /*
+     * set(): metodo que cria dados na url passada
+     * child(): Acessa o nó filho passado por parâmetro
+     */
+    // ref.child(card.nome)
+    //     .set(card)
+    //     .push(card)
+    //     .then(() => {
+    //         adicionaCardATela(card)
+    //     })
+
+    /**
+     * push(): cria um id unico e insere os dados dentro de uid
+     */
+    ref.push(card).then(snapshot => {
+        adicionaCardATela(card, snapshot.key)
+    })
 };
 
 /**
@@ -16,7 +46,13 @@ function criarCard() {
  * @param {String} id Id do card
  */
 function deletar(id) {
-    
+    var card = document.getElementById(id)
+
+    // remove(): remove o nó em que o metodo é utilizado, remove também todos os nós desse nó removido.     
+    ref.child(id).remove().then(() => card.remove())
+
+    // set(null): Ao setar um nó em nulo exclui esse nó do firebase
+    // ref.child(id).set(null).then(() => card.remove())
 };
 
 /**
@@ -24,7 +60,16 @@ function deletar(id) {
  * @param {String} id Id do card
  */
 function curtir(id) {
+    var card = document.getElementById(id)
+    var count = card.getElementsByClassName('count-number')[0]
+    var countNumber = +count.innerText
+    countNumber = countNumber + 1
 
+    // set(): Pode ser acesssado diretamente o objeto que quer atualizar e passar o valor atualizado
+    // ou pode-se passar o objeto completo e atualiza-lo com os novos valores nos campos correspondentes
+    ref.child(id + '/curtidas').set(countNumber).then(() => {
+        count.innerText = countNumber
+    })
 };
 
 /**
@@ -32,14 +77,53 @@ function curtir(id) {
  * @param {String} id Id do card
  */
 function descurtir(id) {
+    var card = document.getElementById(id)
+    var count = card.getElementsByClassName('count-number')[0]
+    var countNumber = +count.innerText
 
+    if (countNumber > 0) {
+        countNumber = countNumber - 1
+
+        // update(): Recebe um objeto (apenas um objeto) e atualiza APENAS as propriedades desse objeto
+        ref.child(id + '/curtidas').update({ curtidas: countNumber }).then(() => {
+            count.innerText = countNumber
+        })
+    }
 };
 
 /**
  * Espera o evento de que a DOM está pronta para executar algo
  */
 document.addEventListener("DOMContentLoaded", function () {
-    
+    /**
+     * once(): retorna os dados lidos de uma URL
+     * snapshot: objeto retornado pela leitura
+     * val(): valores do objeto
+     */
+    ref.once('value').then(snapshot => {
+        // acessa um nó filho
+        // console.log('child', snapshot.child('-M0TuAqA1UyqyZNet1pw').val())
+
+        // checa se existe algo no snapshot
+        // console.log('exists()', snapshot.exists())
+
+        // e existe o filho passado na url
+        // console.log('hasChild() nome', snapshot.hasChild('-M0TuAqA1UyqyZNet1pw/nome'))
+        // console.log('hasChild() comentario', snapshot.hasChild('-M0TuAqA1UyqyZNet1pw/comentario'))
+
+        // se existe algum filho no nó
+        // console.log('hasChildren()', snapshot.child('-M0TuAqA1UyqyZNet1pw').hasChildren())
+
+        // numero de filhos no snapshot
+        // console.log('numChildren()', snapshot.numChildren())
+
+        // a chave desse snapshot
+        // console.log('chave', snapshot.key)
+
+        snapshot.forEach(value => {
+            adicionaCardATela(value.val(), value.key)
+        })
+    })
 });
 
 /**
