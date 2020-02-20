@@ -36,9 +36,18 @@ function criarCard() {
     /**
      * push(): cria um id unico e insere os dados dentro de uid
      */
-    ref.push(card).then(snapshot => {
-        adicionaCardATela(card, snapshot.key)
-    })
+    // ref.push(card).then(snapshot => {
+    //     adicionaCardATela(card, snapshot.key)
+    // })
+
+    /**
+     * Requisição AJAX utilizando Fetch
+     */
+    fetch('https://curso-firebase-webapps-6074c.firebaseio.com/card.json', {
+        body: JSON.stringify(card),
+        method: 'POST',
+        mode: 'no-cors' // Modo não cors
+    }).catch(err => console.log(err))
 };
 
 /**
@@ -95,35 +104,133 @@ function descurtir(id) {
  * Espera o evento de que a DOM está pronta para executar algo
  */
 document.addEventListener("DOMContentLoaded", function () {
+    // LOGGING DO STATUS DAS CHAMADAS DO FIREBASE
+    // firebase.database.enableLogging(message => console.log(message))
+    // ===================================
+
     /**
      * once(): retorna os dados lidos de uma URL
      * snapshot: objeto retornado pela leitura
      * val(): valores do objeto
      */
-    ref.once('value').then(snapshot => {
-        // acessa um nó filho
-        // console.log('child', snapshot.child('-M0TuAqA1UyqyZNet1pw').val())
+    // ref.once('value').then(snapshot => {
+    // acessa um nó filho
+    // console.log('child', snapshot.child('-M0TuAqA1UyqyZNet1pw').val())
 
-        // checa se existe algo no snapshot
-        // console.log('exists()', snapshot.exists())
+    // checa se existe algo no snapshot
+    // console.log('exists()', snapshot.exists())
 
-        // e existe o filho passado na url
-        // console.log('hasChild() nome', snapshot.hasChild('-M0TuAqA1UyqyZNet1pw/nome'))
-        // console.log('hasChild() comentario', snapshot.hasChild('-M0TuAqA1UyqyZNet1pw/comentario'))
+    // e existe o filho passado na url
+    // console.log('hasChild() nome', snapshot.hasChild('-M0TuAqA1UyqyZNet1pw/nome'))
+    // console.log('hasChild() comentario', snapshot.hasChild('-M0TuAqA1UyqyZNet1pw/comentario'))
 
-        // se existe algum filho no nó
-        // console.log('hasChildren()', snapshot.child('-M0TuAqA1UyqyZNet1pw').hasChildren())
+    // se existe algum filho no nó
+    // console.log('hasChildren()', snapshot.child('-M0TuAqA1UyqyZNet1pw').hasChildren())
 
-        // numero de filhos no snapshot
-        // console.log('numChildren()', snapshot.numChildren())
+    // numero de filhos no snapshot
+    // console.log('numChildren()', snapshot.numChildren())
 
-        // a chave desse snapshot
-        // console.log('chave', snapshot.key)
+    // a chave desse snapshot
+    // console.log('chave', snapshot.key)
 
-        snapshot.forEach(value => {
-            adicionaCardATela(value.val(), value.key)
+    //     snapshot.forEach(value => {
+    //         adicionaCardATela(value.val(), value.key)
+    //     })
+    // })
+    // ===================================
+
+    /**
+     * ON
+     */
+    // ref.on('value', snapshot => {
+    //     snapshot.forEach(value => {
+    //         adicionaCardATela(value.val(), value.key)
+    //     })
+    // })
+
+    // ref.on('child_added', snapshot => {
+    //     adicionaCardATela(snapshot.val(), snapshot.key)
+    // })
+
+    // ref.on('child_changed', (snapshot, uid) => {
+    //     console.log(snapshot.key, uid)
+    // })
+
+    // ref.on('child_removed', snapshot => {
+    //     console.log('removed', snapshot.key)
+    // })
+    // ===================================
+
+    /**
+     * ORDENAÇÃO
+     * 
+     * orderByChild('filho'): Ordena pela propriedade filho passado como parâmetro
+     * orderByKey(): Ordena pela chave dos nós    
+     * orderByValue(): Ordena pelo valor de cada propriedade dentro do nó, 
+     *  não vale para nós que tenham como filho outros nós     
+     * !!! É possível utilizar apenas um método de ordenação por vez !!!
+     */
+    // ref.orderByChild('idade').on('child_added', snapshot => {
+    //     adicionaCardATela(snapshot.val(), snapshot.key)
+    // })
+    // ===================================
+
+    /**
+     * FILTRO
+     * 
+     * startAt(any-value): Traz valores cujo valor passado na query comece no valor da propriedade selecionada (>=)
+     * endAt(any-value): Traz valores cujo valor passado na query vá até o valor da propriedade selecionada (<=)
+     * equalTo(any-value): Traz valores cujo valor passado na query bata exatamente com o valor da propriedade selecionada (=)
+     */
+    // ref.orderByChild('idade').equalTo(20)
+    //     .on('child_added', snapshot => {
+    //         adicionaCardATela(snapshot.val(), snapshot.key)
+    //     })
+    // ===================================
+
+
+    /**
+     * LIMITES
+     * 
+     * limitToFirst(Number): Retorna apenas os primeiros valores de acordo com o número passado por parâmetro
+     * limitToLast(Number): Retorna apenas os últimos valores de acordo com o número passado por parâmetro
+     */
+    // ref.limitToLast(5)
+    //     .on('child_added', snapshot => {
+    //         adicionaCardATela(snapshot.val(), snapshot.key)
+    //     })
+    // ===================================
+
+    /**
+     * .off() || .off('value'): Remover observável da rota
+     */
+    // ref.on(
+    //     'value',
+    //     snapshot => {
+    //         snapshot.forEach(value => {
+    //             adicionaCardATela(value.val(), value.key)
+    //         })
+
+    //         ref.off('value')
+    //     },
+    //     // Tratamento de erros
+    //     err => console.error('erro ao descurtir', err)
+    // )
+
+    /**
+     * Requsição AJAX com Fetch
+     * 
+     * OBS: url da requisa com .json no final
+     */
+    fetch('https://curso-firebase-webapps-6074c.firebaseio.com/card.json')
+        .then(res => res.json())
+        .then(res => {
+            for (const key in res) {
+                if (res.hasOwnProperty(key)) {
+                    adicionaCardATela(res[key], key)
+                }
+            }
         })
-    })
 });
 
 /**
